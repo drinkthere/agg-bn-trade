@@ -1,10 +1,8 @@
 vendor/
 .idea
 config/*.json
-bin/bnmm
+bin/aggbntrade
 bin/logs
 logs/
-okx
 *.DS_Store 
 *.env
-go-binance
