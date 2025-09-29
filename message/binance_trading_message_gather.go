@@ -21,15 +21,17 @@ func StartGatherBinanceFuturesOrder(orderChan chan *futures.WsUserDataEvent, ord
 				continue
 			}
 
-			instID := order.Symbol
-			globalContext.FuturesOrderChannel <- &container.ZMQOrder{
-				Sbl: instID,
-				Px:  order.OriginalPrice,
-				Sz:  order.LastFilledQty,
-				Ets: event.Time,
-				Tts: event.TransactionTime,
+			if order.Status == futures.OrderStatusTypePartiallyFilled || order.Status == futures.OrderStatusTypeFilled {
+				instID := order.Symbol
+				globalContext.FuturesOrderChannel <- &container.ZMQOrder{
+					Sbl: instID,
+					Px:  order.OriginalPrice,
+					Sz:  order.LastFilledQty,
+					Ets: event.Time,
+					Tts: event.TransactionTime,
+				}
+				logger.Debug("[TradingGather] instID=%s price=%s, volume=%s", instID, order.OriginalPrice, order.LastFilledQty)
 			}
-			logger.Debug("[TradingGather] instID=%s price=%f, volume=%f", instID, order.OriginalPrice, order.LastFilledQty)
 		}
 	}()
 	logger.Info("[TradingGather] Start Gather Binance Futures Order")
@@ -52,7 +54,7 @@ func StartGatherBinanceFuturesOrder(orderChan chan *futures.WsUserDataEvent, ord
 				Ets: order.Time,
 				Tts: order.TransactionTime,
 			}
-			logger.Debug("[TradingGatherLite] instID=%s price=%f, volume=%f", instID, order.LastFilledPrice, order.LastFilledQuantity)
+			logger.Debug("[TradingGatherLite] instID=%s price=%s, volume=%s", instID, order.LastFilledPrice, order.LastFilledQuantity)
 		}
 	}()
 	logger.Info("[TradingGatherLite] Start Gather Binance Futures Lite Order")
