@@ -1,0 +1,10 @@
+vendor/
+.idea
+config/*.json
+bin/bnmm
+bin/logs
+logs/
+okx
+*.DS_Store 
+*.env
+go-binance
