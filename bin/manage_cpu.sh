@@ -26,7 +26,7 @@ restart() {
     start
 }
 
-case "$2" in
+case "$1" in
     start)
         start
         ;;

@@ -11,11 +11,11 @@ import (
 
 func StartZmq() {
 	logger.Info("Start Binance Ticker ZMQ")
-	if globalConfig.FuturesZMQIPC == "" {
+	if globalConfig.FuturesZMQIPC != "" {
 		startZmq(globalConfig.FuturesZMQIPC, config.FuturesInstrument, globalContext.FuturesOrderChannel)
 	}
 
-	if globalConfig.SpotZMQIPC == "" {
+	if globalConfig.SpotZMQIPC != "" {
 		startZmq(globalConfig.SpotZMQIPC, config.SpotInstrument, globalContext.FuturesOrderChannel)
 	}
 }
