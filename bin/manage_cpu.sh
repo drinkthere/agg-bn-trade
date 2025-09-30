@@ -2,8 +2,8 @@
 
 cpu_index=44
 start() {
-    echo "Starting the process for account '$account' @cpu '$cpuidx'..."
-    nohup taskset -c "cpu_index"  ./aggbntrade ../config/config.json >> /data/data/aggbntrade/nohup.log 2>&1 &
+    echo "Starting the process @cpu '$cpu_index'..."
+    nohup taskset -c "$cpu_index"  ./aggbntrade ../config/config.json >> /data/dc/aggbntrade/nohup.log 2>&1 &
     echo "Process started."
 }
 
