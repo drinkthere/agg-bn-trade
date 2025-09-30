@@ -16,7 +16,7 @@ func StartZmq() {
 	}
 
 	if globalConfig.SpotZMQIPC != "" {
-		startZmq(globalConfig.SpotZMQIPC, config.SpotInstrument, globalContext.FuturesOrderChannel)
+		startZmq(globalConfig.SpotZMQIPC, config.SpotInstrument, globalContext.SpotOrderChannel)
 	}
 }
 
@@ -62,6 +62,7 @@ func startZmq(ipc string, instType config.InstrumentType, orderChan chan *contai
 
 			select {
 			case zmqOrder := <-orderChan:
+				logger.Info("### order is %+v", zmqOrder)
 				jsonBytes, err := json.Marshal(zmqOrder)
 				if err != nil {
 					logger.Warn("[StartZmq]  %s %s  Error marshaling Ticker: %v", config.BinanceExchange, instType, err)

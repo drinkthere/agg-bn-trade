@@ -107,7 +107,7 @@ func StartGatherBinanceFuturesOrder(orderChan chan *futures.WsUserDataEvent, ord
 				lastTime.transactionTime = order.TransactionTime
 			}
 
-			logger.Info("[TradingGatherLite] instID=%s price=%f, volume=%f", instID, order.LastFilledPrice, order.LastFilledQuantity)
+			logger.Info("[TradingGatherLite] instID=%s price=%s, volume=%s", instID, order.LastFilledPrice, order.LastFilledQuantity)
 		}
 	}()
 	logger.Info("[TradingGatherLite] Start Gather Binance Futures Lite Order")
