@@ -6,6 +6,8 @@ import (
 	"agg-bn-trade/utils/logger"
 	"encoding/json"
 	zmq "github.com/pebbe/zmq4"
+	"os"
+	"strings"
 	"time"
 )
 
@@ -57,6 +59,19 @@ func startZmq(ipc string, instType config.InstrumentType, orderChan chan *contai
 					time.Sleep(time.Second * 1)
 					continue
 				}
+
+				// 如果是 IPC 文件，设置权限让其他用户可以访问
+				if strings.HasPrefix(ipc, "ipc://") {
+					ipcPath := strings.TrimPrefix(ipc, "ipc://")
+					// 设置文件权限为 666 (rw-rw-rw-)，让所有用户都可以读写
+					err := os.Chmod(ipcPath, 0666)
+					if err != nil {
+						logger.Warn("[StartZmq] Failed to set IPC file permissions for %s: %s", ipcPath, err.Error())
+					} else {
+						logger.Info("[StartZmq] Set IPC file permissions to 0666 for %s", ipcPath)
+					}
+				}
+				logger.Info("[StartZmq] %s %s Successfully bound to %s", config.BinanceExchange, instType, ipc)
 				isPubStopped = false
 			}
 
