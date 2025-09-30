@@ -27,39 +27,41 @@ func StartGatherBinanceFuturesOrder(orderChan chan *futures.WsUserDataEvent, ord
 				continue
 			}
 
-			instID := order.Symbol
+			if order.Status == futures.OrderStatusTypePartiallyFilled || order.Status == futures.OrderStatusTypeFilled {
+				instID := order.Symbol
 
-			// 获取该 instID 的上次时间记录
-			lastTime, exists := lastTimeMap[instID]
-			if exists {
-				// 过滤时间戳小于上一条消息的订单
-				if event.Time < lastTime.eventTime || event.TransactionTime < lastTime.transactionTime {
-					logger.Debug("[TradingGather] Skip order for %s due to older timestamp: eventTime=%d < %d or transactionTime=%d < %d",
-						instID, event.Time, lastTime.eventTime, event.TransactionTime, lastTime.transactionTime)
-					continue
+				// 获取该 instID 的上次时间记录
+				lastTime, exists := lastTimeMap[instID]
+				if exists {
+					// 过滤时间戳小于上一条消息的订单
+					if event.Time < lastTime.eventTime || event.TransactionTime < lastTime.transactionTime {
+						logger.Debug("[TradingGather] Skip order for %s due to older timestamp: eventTime=%d < %d or transactionTime=%d < %d",
+							instID, event.Time, lastTime.eventTime, event.TransactionTime, lastTime.transactionTime)
+						continue
+					}
 				}
-			}
 
-			globalContext.FuturesOrderChannel <- &container.ZMQOrder{
-				Sbl: instID,
-				Px:  order.OriginalPrice,
-				Sz:  order.LastFilledQty,
-				Ets: event.Time,
-				Tts: event.TransactionTime,
-			}
-
-			// 更新该 instID 的最新时间戳
-			if lastTime == nil {
-				lastTimeMap[instID] = &timeRecord{
-					eventTime:       event.Time,
-					transactionTime: event.TransactionTime,
+				globalContext.FuturesOrderChannel <- &container.ZMQOrder{
+					Sbl: instID,
+					Px:  order.OriginalPrice,
+					Sz:  order.LastFilledQty,
+					Ets: event.Time,
+					Tts: event.TransactionTime,
 				}
-			} else {
-				lastTime.eventTime = event.Time
-				lastTime.transactionTime = event.TransactionTime
-			}
 
-			logger.Debug("[TradingGather] instID=%s price=%f, volume=%f", instID, order.OriginalPrice, order.LastFilledQty)
+				// 更新该 instID 的最新时间戳
+				if lastTime == nil {
+					lastTimeMap[instID] = &timeRecord{
+						eventTime:       event.Time,
+						transactionTime: event.TransactionTime,
+					}
+				} else {
+					lastTime.eventTime = event.Time
+					lastTime.transactionTime = event.TransactionTime
+				}
+
+				logger.Info("[TradingGather] instID=%s price=%s, volume=%s", instID, order.OriginalPrice, order.LastFilledQty)
+			}
 		}
 	}()
 	logger.Info("[TradingGather] Start Gather Binance Futures Order")
@@ -75,7 +77,6 @@ func StartGatherBinanceFuturesOrder(orderChan chan *futures.WsUserDataEvent, ord
 			}
 
 			instID := order.Symbol
-
 			// 获取该 instID 的上次时间记录
 			lastTime, exists := lastTimeMap[instID]
 			if exists {
@@ -106,7 +107,7 @@ func StartGatherBinanceFuturesOrder(orderChan chan *futures.WsUserDataEvent, ord
 				lastTime.transactionTime = order.TransactionTime
 			}
 
-			logger.Debug("[TradingGatherLite] instID=%s price=%f, volume=%f", instID, order.LastFilledPrice, order.LastFilledQuantity)
+			logger.Info("[TradingGatherLite] instID=%s price=%f, volume=%f", instID, order.LastFilledPrice, order.LastFilledQuantity)
 		}
 	}()
 	logger.Info("[TradingGatherLite] Start Gather Binance Futures Lite Order")
