@@ -36,7 +36,7 @@ func (ws *binanceSpotOrderWebSocket) keepAlive() {
 	binanceClient.Init(&ws.cfg)
 
 	// 获取 listenKey，监听transaction 消息时，需要这个 key
-	listenKey, err := binanceClient.SpotClient.NewStartUserStreamService().Do(context.Background())
+	listenKey, err := binanceClient.SpotClient.NewStartMarginUserStreamService().Do(context.Background())
 	if err != nil {
 		logger.Error("[BinanceUserDataWs] %s Get binance spot listen key failed, exit the program", ws.cfg.Account)
 		return
@@ -47,7 +47,7 @@ func (ws *binanceSpotOrderWebSocket) keepAlive() {
 	go func() {
 		for {
 			time.Sleep(30 * time.Minute)
-			err = binanceClient.SpotClient.NewKeepaliveUserStreamService().ListenKey(ws.listenKey).Do(context.Background())
+			err = binanceClient.SpotClient.NewKeepaliveMarginUserStreamService().ListenKey(ws.listenKey).Do(context.Background())
 			if err != nil {
 				logger.Error("[BinanceUserDataWs] %s Refresh binance spot listen key failed, exit the program", ws.cfg.Account)
 				return
