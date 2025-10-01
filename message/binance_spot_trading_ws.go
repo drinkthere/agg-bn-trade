@@ -86,7 +86,7 @@ func (ws *binanceSpotOrderWebSocket) startSpotUserDataWs(globalContext *mmcontex
 			if ws.cfg.LocalIP == "" {
 				_, stopChan, err = binanceSpot.WsUserDataServe(ws.listenKey, ws.handleUserDataEvent, ws.handleError)
 			} else {
-				_, stopChan, err = binanceSpot.WsUserDataServeWithIp(ws.cfg.LocalIP, ws.listenKey, ws.handleUserDataEvent, ws.handleError)
+				_, stopChan, err = binanceSpot.WsUserDataServeWithIp(ws.listenKey, ws.cfg.LocalIP, ws.handleUserDataEvent, ws.handleError)
 			}
 			if err != nil {
 				logger.Error("[BinanceUserDataWs] %s Subscribe Binance Spot User Data Error: %s", ws.cfg.Account, err.Error())
